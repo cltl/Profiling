@@ -1,0 +1,8 @@
+src/old
+src/*.pyc
+data/
+src_v3/
+relation_finding_new/
+wikidata_new/
+out.txt
+*/out.txt
