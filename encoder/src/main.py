@@ -19,7 +19,6 @@ print theano.config.blas.ldflags
 
 
 
-ATTRIBUTES=config.get_columns()
 MAX_NO_PROGRESS=10
 labels_file='labels.pkl'
 
@@ -128,6 +127,7 @@ def eval_acc(test_fn, all_examples, inv_word_dicts, topk_acc=1, print_allowed=Fa
     acc_per_num = {}
     attr_acc = {}
     influences = {}
+    ATTRIBUTES=config.get_columns(args.crowd_experiment)
     count_per_total = defaultdict(int)
     for i in range(len(ATTRIBUTES)):
         acc_per_num[i]={'c':0, 'i':0}
