@@ -7,7 +7,7 @@ The data extraction scripts are written in python 3. They take input data from W
 
 There are multiple scripts that extract slightly different data:
 
-1. We extract a TSV with data on all people with ???
+1. We extract a TSV with data on all people with `create_people_tsv.py`.
 
 2. We create occupation slices of this with ???
 
