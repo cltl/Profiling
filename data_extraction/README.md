@@ -13,7 +13,7 @@ There are multiple scripts that extract slightly different data:
 
 3. We extract embeddings and create ... with
 
-4. In addition, we prepared data for a crowd experiment on American citizens. First we extract a list of Americans with `extract_list_of_americans.sh` and then we create the TSV with `prepare_crowd_data.py``create_americans_tsv.py`. We then use the scripts 
+4. In addition, we prepared data for a crowd experiment on American citizens. First we extract a list of Americans with `extract_list_of_americans.sh`, we store a value with values by running `infer_categories.py`, and then we create the TSV with `prepare_crowd_data.py` (an initial version of this script without the postprocessing can be found in `other/create_americans_tsv.py`). 
 
 5. Finally, we prepared the data for NIL clustering in the GV domain with ...
 
