@@ -17,7 +17,7 @@ Extraction and categorization of world knowledge about people from Wikidata for 
 
 ### Data downloads
 
-The actual data can be found at (contact me if you need the actual train-dev-test splits we used):
+The actual data can be found here (contact me if you need the actual train-dev-test splits we used).
 
 **Full datasets**
 
