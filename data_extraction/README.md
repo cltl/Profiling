@@ -1,6 +1,24 @@
 # Data extraction
 Extraction and categorization of world knowledge about people from Wikidata for the sake of creating profiles.
 
+### Directory structure
+
+The data extraction scripts are written in python 3. They take input data from Wikidata (found in `../data/raw_instances`), cache intermediate results, such as list of people URIs, in `../data/tmp`, and store the output TSV data ready for profiling over in `../data/extracted_instances`.
+
+There are multiple scripts that extract slightly different data:
+
+1. We extract a TSV with data on all people with ???
+
+2. We create occupation slices of this with ???
+
+3. We extract embeddings and create ... with
+
+4. In addition, we prepared data for a crowd experiment on American citizens with ???
+
+5. Finally, we prepared the data for NIL clustering in the GV domain with ...
+
+These scripts use the utility functions defined in `utils.py`, `queries.py`, and `pickle_utils.py`.
+
 ### Some background information
 
 1. **Which KB** This is [important](http://www.semantic-web-journal.net/system/files/swj1141.pdf), since DBpedia is much worse than wikidata in terms of both quantity (~5 times more people in Wikidata) and in terms of quality (Wikidata is manually curated all the time). Hence, I decided to use Wikidata (I also considered Freebase and BabelNet).
