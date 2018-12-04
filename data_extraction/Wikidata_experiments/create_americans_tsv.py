@@ -53,6 +53,7 @@ print(header)
 people_data=pickle_utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), INSTANCEDIR, pickle_with_all_data)
 
 print('people data loaded')
+print(people_data)
 
 people_for_pandas=[]
 for person_uri, person_from_json in people_data.items():

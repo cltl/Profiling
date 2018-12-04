@@ -14,7 +14,7 @@ def wikidata_people_to_pickle(files, all_people, attr_keys, idir, filename):
         print("People data file not found. Extracting now...")
         people_datas=utils.extract_relations_from_files(files, all_people, attr_keys, idir)
         people_data=people_datas[0]
-        print("People data extracted.")
+        print("People data extracted, to file %s." % filename)
         with open(filename, 'wb') as w:
             pickle.dump(filename,w)
     return people_data

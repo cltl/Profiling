@@ -37,13 +37,12 @@ header+=clean_attributes.values()
 print('HEADER:', header)
 
 # EXTRACT PEOPLE DATA FROM WIKIDATA TO A PICKLE
-people_data=pickle_utils.wikidata_people_to_pickle([statements_file], all_people, clean_attributes.keys(), TMPDIR, pickle_with_all_data)
+the_people_data=pickle_utils.wikidata_people_to_pickle([statements_file], all_people, clean_attributes.keys(), TMPDIR, pickle_with_all_data)
 print('people data loaded')
-
-sys.exit()
+print(type(the_people_data))
 
 people_for_pandas=[]
-for person_uri, person_from_json in people_data.items():
+for person_uri, person_from_json in the_people_data.items():
     person_from_json=utils.sets_to_dates(person_from_json)
     person_for_pandas=[person_uri]
 
@@ -61,4 +60,4 @@ print('%d columns before removing NIL columns' % len(frame.columns))
 frame=frame.dropna(axis=1, how='all')
 print('%d columns after removing NIL columns' % len(frame.columns))
 
-frame.to_csv('%s/%s' % (INSTANCEDIR, TSVFILENAME), '\t')
+frame.to_csv(OUTFILE, '\t')
