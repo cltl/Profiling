@@ -9,15 +9,15 @@ There are multiple scripts that extract slightly different data:
 
 1. We extract a TSV with data on all people with `create_people_tsv.py`.
 
-2. We create occupation slices of this with ???
+2. We create occupation slices of this with ``
 
 3. We extract embeddings and create ... with
 
-4. In addition, we prepared data for a crowd experiment on American citizens with ???
+4. In addition, we prepared data for a crowd experiment on American citizens. First we extract a list of Americans with `extract_list_of_americans.sh` and then we create the TSV with `prepare_crowd_data.py``create_americans_tsv.py`. We then use the scripts 
 
 5. Finally, we prepared the data for NIL clustering in the GV domain with ...
 
-These scripts use the utility functions defined in `utils.py`, `queries.py`, and `pickle_utils.py`.
+These scripts use the utility functions defined in `utils.py` and the SPARQL queries in `queries.py`.
 
 ### Some background information
 
