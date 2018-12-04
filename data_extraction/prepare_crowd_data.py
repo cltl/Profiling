@@ -74,8 +74,6 @@ mappings_file='%s/mappings.tsv' % TMPDIR
 
 # output files
 OUTDIR='../data/extracted_instances'
-TSVFILENAME='%s/crowd_americans.tsv'
-
 
 american_uris, american_ids=extract_americans(americans_tsv)
 
@@ -92,7 +90,7 @@ for col in tmp_header:
 print(header)
 
 # EXTRACT PEOPLE DATA FROM WIKIDATA TO A PICKLE
-people_data=utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), INSTANCEDIR, pickle_with_all_data)
+people_data=utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), TMPDIR, pickle_with_all_data)
 
 mappings={}
 with open(mappings_file, 'r') as mapfile:
@@ -176,51 +174,9 @@ print(len(rows_dec_entropy))
 new_dec_entropy=deduplicate(rows_dec_entropy)
 print(len(new_dec_entropy))
 
-dump_to_file(['instance_uri'] + header, rows_inc_entropy, 'increasing_entropy.tsv')
-dump_to_file(['instance_uri'] + header, rows_dec_entropy, 'decreasing_entropy.tsv')
+dump_to_file(['instance_uri'] + header, rows_inc_entropy, '%s/increasing_entropy.tsv' % OUTDIR)
+dump_to_file(['instance_uri'] + header, rows_dec_entropy, '%s/decreasing_entropy.tsv' % OUTDIR)
 
-dump_to_file(header, new_inc_entropy, 'dedup_inc_entropy.tsv')
-dump_to_file(header, new_dec_entropy, 'dedup_dec_entropy.tsv')
-
-sys.exit()
-
-for k, l in counts.items():
-#    print(k, Counter(l))
-    top10=Counter(l).most_common(10)
-    print(k)
-    mapped_top10=map_values(top10, mappings)
-    for lbl, val in mapped_top10:
-        print('%s\t%d' % (lbl, val))
-
-
-sys.exit()
-
-people_for_pandas=[]
-#firstN=list(people_data.keys())[:10]
-for person_uri in people_data:
-    person_from_json=people_data[person_uri]
-    person_for_pandas=[]
-    person_for_pandas.append(person_uri)
-    person_from_json=utils.sets_to_dates(person_from_json)
-    person_for_pandas+=utils.infer_properties(person_from_json, person_uri)
-
-    for attruri, attrlabel in clean_attributes.items():
-        if attruri in person_from_json:
-            person_for_pandas.append(person_from_json[attruri])
-        else:
-            person_for_pandas.append("")
-    people_for_pandas.append(person_for_pandas)
-
-frame=pd.DataFrame(people_for_pandas)
-frame.columns=header
-
-fields_to_fix=['height', 'sport number']
-frame[fields_to_fix] = frame[fields_to_fix].apply(pd.to_numeric, errors='coerce')
-
-print('%d columns before removing NIL columns' % len(frame.columns))
-frame=frame.dropna(axis=1, how='all')
-print('%d columns after removing NIL columns' % len(frame.columns))
-
-
-frame.to_csv(TSVFILENAME, '\t')
+dump_to_file(header, new_inc_entropy, '%s/dedup_inc_entropy.tsv' % OUTDIR)
+dump_to_file(header, new_dec_entropy, '%s/dedup_dec_entropy.tsv' % OUTDIR)
 

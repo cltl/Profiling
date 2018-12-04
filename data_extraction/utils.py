@@ -58,14 +58,15 @@ def wikidata_people_to_pickle(files, all_people, attr_keys, idir, filename):
     try:
         people_data=pickle.load(open(filename, 'rb'))
         print("People data file found and loaded.")
+        return people_data
     except:
         print("People data file not found. Extracting now...")
         people_datas=extract_relations_from_files(files, all_people, attr_keys, idir)
         people_data=people_datas[0]
         print("People data extracted, to file %s." % filename)
         with open(filename, 'wb') as w:
-            pickle.dump(filename,w)
-    return people_data
+            pickle.dump(people_data,w)
+        return people_data
 
 def get_relevant_vectors(freebase_vectors_pickle, people_data, freebase_txt):
     if os.path.exists(freebase_vectors_pickle):

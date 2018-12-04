@@ -2,7 +2,7 @@ import pickle
 import json
 
 def get_states():
-    loc_filename="../data/raw_instances/loc.json"
+    loc_filename="../data/tmp/loc.json"
     locs=pickle.load(open(loc_filename, 'rb'))
     states=set()
     for entity, ldata in locs.items():
