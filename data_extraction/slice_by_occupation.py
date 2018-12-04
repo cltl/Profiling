@@ -19,9 +19,9 @@ else:
         occupation=''
         human=True
 
-INSTANCEDIR='instance_data'
+OUTDIR='../data/extracted_instances'
 
-filename="%s/tabular_person_data.tsv" % INSTANCEDIR
+filename="%s/tabular_person_data.tsv" % OUTDIR
 df=pd.read_csv(filename, '\t')
 
 new_rows=[]
@@ -37,5 +37,5 @@ print('%d columns before removing NIL columns' % len(frame.columns))
 frame=frame.dropna(axis=1, how='all')
 print('%d columns after removing NIL columns' % len(frame.columns))
 
-frame.to_csv('%s/%s' % (INSTANCEDIR, occupation_tsv), '\t')
+frame.to_csv('%s/%s' % (OUTDIR, occupation_tsv), '\t')
 #print(df['occupation'].str.contains('http://www.wikidata.org/entity/Q82955'))

@@ -60,7 +60,7 @@ def wikidata_people_to_pickle(files, all_people, attr_keys, idir, filename):
         print("People data file found and loaded.")
     except:
         print("People data file not found. Extracting now...")
-        people_datas=utils.extract_relations_from_files(files, all_people, attr_keys, idir)
+        people_datas=extract_relations_from_files(files, all_people, attr_keys, idir)
         people_data=people_datas[0]
         print("People data extracted, to file %s." % filename)
         with open(filename, 'wb') as w:
@@ -72,7 +72,7 @@ def get_relevant_vectors(freebase_vectors_pickle, people_data, freebase_txt):
         vector_json=pickle.load(open(freebase_vectors_pickle, 'rb'))
     else:
         print("FB file does not exist. Creating it now...")
-        freebase_people_uris=[utils.normalize_freebase(person_data[freebase_attr]) for person_uri, person_data in people_data.items() if freebase_attr in person_data and person_data[freebase_attr]!=""]
+        freebase_people_uris=[normalize_freebase(person_data[freebase_attr]) for person_uri, person_data in people_data.items() if freebase_attr in person_data and person_data[freebase_attr]!=""]
         print("Counted %d people with freebase ids" % len(freebase_people_uris))
         vector_json={}
         with open(freebase_txt , 'r') as freebase_raw_file:
@@ -238,6 +238,18 @@ def extract_relations_from_files(file_list, people_set, attribute_set, outdir):
             pickle.dump(biggie, open('%s/%s.p' % (outdir, input_file.split('/')[1].split('.')[0]), 'wb'))
             print('done with %s' % input_file)
     return biggies 
+
+def extract_americans(the_tsv):
+    identifiers=set()
+    uris=set()
+    with open(the_tsv, 'r') as f:
+        for line in f:
+            uri=line.split()[0]
+            uri=uri.rstrip('>').lstrip('<')
+            identifier=uri.split('/')[-1]
+            uris.add(uri)
+            identifiers.add(identifier)
+    return uris,identifiers
 
 def extract_all_dudes(persontype, infile, outfile):
 
