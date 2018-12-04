@@ -1,7 +1,7 @@
 # Data extraction
 Extraction and categorization of world knowledge about people from Wikidata for the sake of creating profiles.
 
-### Directory structure
+### Directory content
 
 The data extraction scripts are written in python 3. They take input data from Wikidata (found in `../data/raw_instances`), cache intermediate results, such as list of people URIs, in `../data/tmp`, and store the output TSV data ready for profiling over in `../data/extracted_instances`.
 
@@ -15,7 +15,7 @@ There are multiple scripts that extract slightly different data:
 
 4. In addition, we prepared data for a crowd experiment on American citizens. First we extract a list of Americans with `extract_list_of_americans.sh`, we store a value with values by running `infer_categories.py`, and then we create the TSV with `prepare_crowd_data.py` (an initial version of this script without the postprocessing can be found in `other/create_americans_tsv.py`). 
 
-5. Finally, we prepared the data for NIL clustering in the GV domain with ...
+5. Finally, we prepared the data for NIL clustering in the GV domain with `create_gv_people_tsv.py`.
 
 These scripts use the utility functions defined in `utils.py` and the SPARQL queries in `queries.py`.
 
