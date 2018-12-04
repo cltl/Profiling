@@ -23,8 +23,11 @@ Extraction and categorization of world knowledge about people from Wikidata for 
 The actual data can be found at (contact me if you need the actual train-dev-test splits we used):
 Full datasets:
 [tabular_person_data.tsv (all people data)](http://cm.fii800.lod.labs.vu.nl/tabular_person_data.tsv)
+
 [tabular_actor_data.tsv (slice of people with an occupation ‘actor’)](http://cm.fii800.lod.labs.vu.nl/tabular_actor_data.tsv)
+
 [tabular_politician_data.tsv (slice of people with an occupation ‘politician’)](http://cm.fii800.lod.labs.vu.nl/tabular_politician_data.tsv)
+
 [tabular_lawyer_data.tsv (slice of people with an occupation 'lawyer')](http://cm.fii800.lod.labs.vu.nl/tabular_lawyer_data.tsv)
 
 Smaller datasets (with embeddings):
