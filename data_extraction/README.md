@@ -9,7 +9,7 @@ There are multiple scripts that extract slightly different data:
 
 1. We extract a TSV with data on all people with `create_people_tsv.py`.
 
-2. We create occupation slices of this with ``
+2. We create occupation slices of this data in 1. with the script `slice_by_occupation.py`.
 
 3. We extract embeddings and create ... with
 
