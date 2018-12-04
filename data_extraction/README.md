@@ -11,7 +11,7 @@ There are multiple scripts that extract slightly different data:
 
 2. We create occupation slices of this data in 1. with the script `slice_by_occupation.py`.
 
-3. The matching of the embeddings with the file in 1. is done in `extract_embeddings.py`. Subsequently, we appended the embeddings to each row for the smaller datasets.
+3. The matching of the embeddings with the file in 1. is done in `other/extract_embeddings.py`. Subsequently, we appended the embeddings to each row for the smaller datasets.
 
 4. In addition, we prepared data for a crowd experiment on American citizens. First we extract a list of Americans with `extract_list_of_americans.sh`, we store a value with values by running `infer_categories.py`, and then we create the TSV with `prepare_crowd_data.py` (an initial version of this script without the postprocessing can be found in `other/create_americans_tsv.py`). 
 
