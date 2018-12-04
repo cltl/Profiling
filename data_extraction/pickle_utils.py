@@ -1,7 +1,6 @@
 import os
 import sys
 import pickle
-sys.path.insert(0,'..')
 import utils
 
 freebase_attr="http://www.wikidata.org/entity/P646-freebase"
