@@ -1,11 +1,9 @@
 import os
 import pickle
 import sys
-sys.path.insert(0,'..')
 
 import queries
 import utils
-import pickle_utils
 import pandas as pd
 
 # settings
@@ -37,7 +35,7 @@ header+=clean_attributes.values()
 print('HEADER:', header)
 
 # EXTRACT PEOPLE DATA FROM WIKIDATA TO A PICKLE
-the_people_data=pickle_utils.wikidata_people_to_pickle([statements_file], all_people, clean_attributes.keys(), TMPDIR, pickle_with_all_data)
+the_people_data=utils.wikidata_people_to_pickle([statements_file], all_people, clean_attributes.keys(), TMPDIR, pickle_with_all_data)
 print('people data loaded')
 print(type(the_people_data))
 

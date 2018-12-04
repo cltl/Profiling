@@ -1,8 +1,6 @@
 import sys
 import os
 import pickle
-import pickle_utils
-sys.path.insert(0,'..')
 import utils
 import pandas as pd
 

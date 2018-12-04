@@ -5,7 +5,6 @@ sys.path.insert(0,'..')
 
 import queries
 import utils
-import pickle_utils
 import pandas as pd
 
 def extract_americans(the_tsv):
@@ -36,7 +35,6 @@ american_uris, american_ids=extract_americans(americans_tsv)
 
 clean_attributes = {'http://www.wikidata.org/entity/P21c': 'sex or gender', 'http://www.wikidata.org/entity/P106c': 'occupation', 'http://www.wikidata.org/entity/P937c': 'work location', 'http://www.wikidata.org/entity/P69c': 'educated at', 'http://www.wikidata.org/entity/P140c': 'religion', 'http://www.wikidata.org/entity/P102c': 'member of political party', 'http://www.wikidata.org/entity/P20c': 'place of death', 'http://www.wikidata.org/entity/P19c': 'place of birth', 'http://www.wikidata.org/entity/P570c': 'date of death', 'http://www.wikidata.org/entity/P569c': 'date of birth'}
 
-import pickle_utils
 
 print('Extracting data for %d Americans..' % len(american_ids))
 
@@ -50,7 +48,7 @@ for col in tmp_header:
 print(header)
 
 # EXTRACT PEOPLE DATA FROM WIKIDATA TO A PICKLE
-people_data=pickle_utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), INSTANCEDIR, pickle_with_all_data)
+people_data=utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), INSTANCEDIR, pickle_with_all_data)
 
 print('people data loaded')
 print(people_data)
