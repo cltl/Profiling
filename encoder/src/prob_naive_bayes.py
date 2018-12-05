@@ -163,12 +163,15 @@ if __name__=="__main__":
         crowd_iterator = split_data_in_batches(crowd_data, i, mapping, batch_size, crowd=True)
         for x_chunk, y_chunk in crowd_iterator:
             if len(x_chunk):
-                y_pred=gnb.predict(x_chunk)
+                y_pred=gnb.predict_proba(x_chunk)
                 print(len(y_pred), len(x_chunk))
                 print(len(x_chunk[0]))
                 mapped_y_val=[]
-                for y_val in y_pred:
-                    mapped_y_val.append(inv_mapping[i][str(y_val)])
+                for example in y_pred:
+                    mapped_preds={}
+                    for index, class_prob in enumerate(example):
+                        mapped_preds[inv_mapping[i][str(index)]]=class_prob
+                    mapped_y_val.append(mapped_preds) 
                 crowd_predictions[attributes[i]]=mapped_y_val
 
         test_iterator = split_data_in_batches(test_data, i, mapping, batch_size)
@@ -193,7 +196,7 @@ if __name__=="__main__":
 
     print acc
 
-    with open('nb_predictions.pkl', 'wb') as w:
+    with open('nb_predictions_probs.pkl', 'wb') as w:
         pickle.dump(crowd_predictions, w)
 
 #X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])

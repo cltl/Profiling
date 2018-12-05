@@ -45,6 +45,7 @@ def build_fn(args, embeddings):
     inputs = []
     in_xs = []
     in_masks = []
+    print(args.relations)
     for i in range(args.relations):
         in_x1 = T.ivector('x%d' % i)
         in_mask = T.vector('mask%d' % i)
@@ -127,8 +128,9 @@ def eval_acc(test_fn, all_examples, inv_word_dicts, topk_acc=1, print_allowed=Fa
     acc_per_num = {}
     attr_acc = {}
     influences = {}
-    ATTRIBUTES=config.get_columns(args.crowd_experiment)
+    ATTRIBUTES=config.get_columns(args.experiment)
     count_per_total = defaultdict(int)
+    all_predictions = defaultdict(list)
     for i in range(len(ATTRIBUTES)):
         acc_per_num[i]={'c':0, 'i':0}
         attr_acc[i]={'c':0, 'i':0}
@@ -171,13 +173,17 @@ def eval_acc(test_fn, all_examples, inv_word_dicts, topk_acc=1, print_allowed=Fa
                 for j in range(prob.shape[0]):
                     if print_allowed:
                         to_print="<ol>"
-                        print "System predictions for <i>%s</i>:" % ATTRIBUTES[k]
-                        for prediction in [1,2,3]:
+                        top_predictions=[]
+                        print "System predictions for %s:" % ATTRIBUTES[k]
+                        for prediction in range(1, min(topk_acc+1, len(sort_index[j]))):
                             my_label=''
                             choice=inv_word_dicts[k][str(sort_index[j][-prediction])]
-                            if choice.strip()!='':
-                                my_label=labels_data[k][choice.split('/')[-1]].encode('utf-8')
-                            to_print += "<li><a href=\"%s\">%s</a></li>" % (choice, my_label)
+                            choice_prob=prob[j][sort_index[j][-prediction]]
+                            #if choice.strip()!='':
+                            #    my_label=labels_data[k][choice.split('/')[-1]].encode('utf-8')
+                            to_print += "%s (%s)" % (choice, choice_prob) #my_label)
+                            top_predictions.append(tuple([choice, choice_prob]))
+                        all_predictions[ATTRIBUTES[k]].append(top_predictions)
                         to_print+="</ol>"
                         try:
                             print to_print
@@ -193,7 +199,7 @@ def eval_acc(test_fn, all_examples, inv_word_dicts, topk_acc=1, print_allowed=Fa
                         attr_totals[j]=s
                         attr_corrects[j]=0
                         present[j]=present_attrs
-                    if inps[k+args.relations][j] == 1 and prob[j][inps[k][j]] >= prob[j][sort_index[j][topk_acc*(-1)]]:
+                    if inps[k+args.relations][j] == 1 and prob[j][inps[k][j]] >= prob[j][sort_index[j][(-1)*min(topk_acc, len(sort_index[j]))]]:
                         real_acc += 1
                         corrects[j] += 1
                         if k==my_rel_num:
@@ -226,7 +232,8 @@ def eval_acc(test_fn, all_examples, inv_word_dicts, topk_acc=1, print_allowed=Fa
     logging.info(acc)
     logging.info(acc_per_num)
     logging.info(count_per_total)
-
+    with open('predicted.pkl', 'wb') as p:
+        pickle.dump(all_predictions, p)
     my_graph={}
     for k in attr_acc:
         if attr_acc[k]['c']+attr_acc[k]['i']>=50:
@@ -255,7 +262,7 @@ def main(args):
         test_examples = utils.load_data(args.test_file, False)
     args.num_train = len(train_examples)
     args.num_dev = len(dev_examples)
-    args.relations = len(train_examples[0])
+    #args.relations = len(train_examples[0])
 
     logging.info('-' * 50)
     logging.info('Build dictionary..')
@@ -280,8 +287,8 @@ def main(args):
     #topk_acc=1
 
     labels_data=[]
-    if args.test_print_allowed:
-        labels_data=pickle.load(open(labels_file, 'rb')) 
+    #if args.test_print_allowed:
+    #    labels_data=pickle.load(open(labels_file, 'rb')) 
 
     logging.info('-' * 50)
     logging.info('Intial test..')

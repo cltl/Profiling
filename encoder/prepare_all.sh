@@ -8,8 +8,9 @@
 #echo "Politician data downloaded and stored."
 
 
-entitytype="american"
+entitytype="actor"
+entitytype="gvamerican"
+exp="gvamerican"
 cd src
-python2.7 preprocess.py --crowd_experiment -entity_type "$entitytype"
+python2.7 preprocess.py -experiment $exp -entity_type $entitytype
 cd ..
-

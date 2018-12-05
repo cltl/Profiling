@@ -16,11 +16,9 @@ def get_most_frequent_values_train(data_path, num_attr, word_dicts):
     with open(training_path, 'rb') as data:
         spamreader = csv.reader(data, delimiter='\t', quotechar='"')
         #headers = spamreader.next()
-
         for row in spamreader:
             for i in xrange(num_attr):
                 if row[i] and row[i] in word_dicts[i]:
-                    #print(i, word_dicts[i][row[i]])
                     try:
                         vals[i][row[i]]+=1
                     except:
@@ -40,7 +38,11 @@ if __name__=="__main__":
     entity_type = sys.argv[1]
     data_path='../data/%s' % entity_type
     word_dicts = pickle.load(open('%s/train_dicts.pickle' % data_path, 'rb'))
-    num_attr=len(config.get_columns())-1 # -1 for the embeddings thingie
+    if entity_type=='american':
+        cols=config.get_columns(True)
+    else:
+        cols=config.get_columns()[:-1]
+    num_attr=len(cols) # -1 for the embeddings thingie
     max_vals=get_most_frequent_values_train(data_path, num_attr, word_dicts)
 
     test_path='%s/test.txt' % data_path
@@ -58,4 +60,28 @@ if __name__=="__main__":
         for max_val in max_vals[attribute]:
             acc[attribute]=max_vals[attribute][max_val]*100.0/filled[attribute]
     print acc
+
+    print max_vals
+
+    all_givens=[]
+    all_predicted=[]
+    crowd_test_path='%s/profiler_input.tsv' % data_path
+    with open(crowd_test_path, 'rb') as data:
+        spamreader = csv.reader(data, delimiter='\t', quotechar='"')
+        for row in spamreader:
+            givens_row={}
+            preds_row={}
+            for i in xrange(num_attr):
+                if row[i]:
+                    givens_row[cols[i]]=row[i]
+                else:
+                    preds_row[cols[i]]=max_vals[i]
+            all_givens.append(givens_row)
+            all_predicted.append(preds_row)
+
+with open('mfv_givens.pkl', 'wb') as g:
+    pickle.dump(all_givens, g)
+    
+with open('mfv_predicted.pkl', 'wb') as p:
+    pickle.dump(all_predicted, p)
 #print vals

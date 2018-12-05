@@ -18,7 +18,7 @@ def get_row(sts, meta):
 time_slicing_factor=100 # group by this many years for year of birth
 lifespan_factor=20  # group by this many years for lifespan
 
-def create_data(entity_type, embeddings, crowd_experiment):
+def create_data(entity_type, embeddings, experiment):
     if embeddings:
         fn="../data/%s_emb_data.tsv" % entity_type
     else:
@@ -27,12 +27,25 @@ def create_data(entity_type, embeddings, crowd_experiment):
     inp = open(fn, "r")
     meta = inp.readline().strip()
     meta = meta.split("\t")
+#    if meta[0]=='instance uri':
+    meta = ['unnamed'] + meta
+   
+    #if meta[0]=='instance uri': 
+    #    meta=meta[1:]
     #dob_index=meta.index("date of birth")
-    dob_index=meta.index('century')
-    ls_index=meta.index("lifespan")
-    print(dob_index, ls_index)
-    cols = get_row(config.get_columns(crowd_experiment), meta)
+
+    # NEEDED FOR MOST EXPERIMENTS MINUS THE CURRENT ONE
+    if experiment!='gvamerican':
+        try:
+            dob_index=meta.index('century')
+        except:
+            dob_index=meta.index('date of birth')
+        ls_index=meta.index("lifespan")
+        print(dob_index, ls_index)
+
+    cols = get_row(config.get_columns(experiment), meta)
     data = []
+    print meta
     print cols
     for i, st in enumerate(inp.readlines()):
         if st.strip()=='':
@@ -92,7 +105,9 @@ def main(args):
     print(args)
     entity_type=args.entity_type
     embeddings=args.embeddings
-    train_file, outdir = create_data(entity_type, embeddings, args.crowd_experiment)
+    train_file, outdir = create_data(entity_type, embeddings, args.experiment)
+    #train_file='../data/%s/train.txt' % entity_type
+    #outdir='../data/%s/' % entity_type
 
     logging.info('-' * 50)
     logging.info('Load data files..')

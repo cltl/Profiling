@@ -9,9 +9,9 @@ import os
 import sys
 import json
 import random
+import pickle
 
 values_file="values.pkl"
-ATTRIBUTES=config.get_columns()
 
 def load_data(in_file, emb, max_example=None):
     """
@@ -100,16 +100,24 @@ def vectorize(examples, word_dicts, args, print_allowed=False, labels=[]):
     """
     inxs = []
     masks = []
+    ATTRIBUTES=config.get_columns(args.experiment)
     if print_allowed:
+        all_givens = []
         print_me="<h4>ENTITY: "
         for j in range(len(examples)):
             logging.info(len(examples[j]))
+            this_row={}
             for i in range(args.relations):
                 if examples[j][i]!="":
-                    print_me+="%s=<a href=\"%s\">%s</a>, " % (ATTRIBUTES[i], examples[j][i], labels[i][examples[j][i].split('/')[-1]])
+                    #print_me+="%s=<a href=\"%s\">%s</a>, " % (ATTRIBUTES[i], examples[j][i],examples[j][i]) # labels[i][examples[j][i].split('/')[-1]])
+                    print_me+="%s=%s, " % (ATTRIBUTES[i], examples[j][i])
+                    this_row[ATTRIBUTES[i]]=examples[j][i]
+            all_givens.append(this_row)
             #print(examples[j])
         if len(examples):
             print print_me + '</h4>'
+        with open('given.pkl', 'wb') as p:
+            pickle.dump(all_givens, p)
     for i in range(args.relations):
         in_data = []
         mask = []
@@ -228,10 +236,11 @@ def compute_attr_entropy(cntr, n_size):
             p= (cntr[k]*1.0 / n_size)
             v-=p*np.log2(p)
             cnt+=cntr[k]
-    return v/np.log2(voc_size)
+    return v, v/np.log2(voc_size)
 
 def compute_avg_entropy(examples, word_dicts):
     density=[]
+    norm_density=[]
     #    density.append(5)
     #    print(len(facet))
     inxs = []
@@ -254,10 +263,12 @@ def compute_avg_entropy(examples, word_dicts):
         inxs += [in_data]
         masks += [mask]
         unmasked += [rel_unmasked]
-        attr_entropy=compute_attr_entropy(Counter(in_data), rel_unmasked)
+        attr_entropy, attr_norm_entropy=compute_attr_entropy(Counter(in_data), rel_unmasked)
         #print('attr %d' % (i+1), attr_entropy)
         density.append(attr_entropy)
+        norm_density.append(attr_norm_entropy)
     #return np.array(inxs).astype('int32'), np.array(masks).astype('float32')
     #return 
     print(density)
-    return np.mean(np.nan_to_num(density))
+    print(norm_density)
+    return np.mean(np.nan_to_num(norm_density))

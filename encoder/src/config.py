@@ -9,9 +9,11 @@ _floatX = theano.config.floatX
 def str2bool(v):
     return v.lower() in ('yes', 'true', 't', '1', 'y')
 
-def get_columns(crowd_exp=False):
-    if crowd_exp:
+def get_columns(experiment='crowd'):
+    if experiment=='crowd':
         return ['lifespan', 'century', 'sex or gender', 'occupation', 'work location', 'educated at', 'religion', 'member of political party', 'place of death', 'place of birth']
+    elif experiment=='gvamerican':
+        return ['native language' , 'ethnic group', 'cause of death', 'sex or gender', 'religion', 'member of political party', 'occupation', 'age group']
     else:
         return ['educated at', 'sex or gender', 'country of citizenship', 'native language', 'position held', 'award received', 'religion', 'member of political party', 'work location', 'place of death', 'place of birth', 'cause of death', 'lifespan', 'date of birth', 'embeddings']
 
@@ -133,9 +135,9 @@ def get_args():
                         help='Accuracy among the top K')
 
     # Which experiment 
-    parser.add_argument('--crowd_experiment',
-                        action='store_true',
-                        default=False,
+    parser.add_argument('-experiment',
+			type=str,
+                        default='wikidata',
                         help="Which experiment: on Wikidata or on crowd data")
 
     # Which entity type
