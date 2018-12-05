@@ -1,7 +1,8 @@
 import pickle
+import json
 
 def get_states():
-    loc_filename="../data/raw_instances/loc.json"
+    loc_filename="../data/tmp/loc.json"
     locs=pickle.load(open(loc_filename, 'rb'))
     states=set()
     for entity, ldata in locs.items():
@@ -66,6 +67,5 @@ prop_values['PoliticalParty']=get_political_parties()
 prop_values['Religion']=get_religions()
 print(prop_values)
 
-import json
-with open('values.json', 'w') as j:
+with open('../data/tmp/values.json', 'w') as j:
     json.dump(prop_values, j)

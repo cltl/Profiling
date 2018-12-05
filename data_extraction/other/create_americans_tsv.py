@@ -1,42 +1,30 @@
 import os
 import pickle
 import sys
-sys.path.insert(0,'..')
 
 import queries
 import utils
-import pickle_utils
 import pandas as pd
-
-def extract_americans(the_tsv):
-    identifiers=set()
-    uris=set()
-    with open(the_tsv, 'r') as f:
-        for line in f:
-            uri=line.split()[0]
-            uri=uri.rstrip('>').lstrip('<')
-            identifier=uri.split('/')[-1]
-            uris.add(uri)
-            identifiers.add(identifier)
-    return uris,identifiers
 
 person_ontology_uri="http://www.wikidata.org/entity/Q5"
 NUMATTR=100
 
-INDIR='../../data/raw_instances'
-INSTANCEDIR='../../data/instance_data'
-TSVFILENAME='%s/tabular_americans_data.tsv' % INSTANCEDIR
+# input directory and files
+INDIR='../data/raw_instances'
+statements_file="%s/wikidata-simple-statements.nt" % INDIR
 
-statements_file="%s/wikidata-simple-statements.nt" % INSTANCEDIR
+# tmp files and directory
+TMPDIR='../data/tmp'
+pickle_with_all_data='%s/us_crowd.p' % TMPDIR
+americans_nt="%s/us_nationals.nt" % TMPDIR
 
-pickle_with_all_data='%s/us_crowd.p' % INSTANCEDIR
+# output directory
+OUTDIR='../data/extracted_instances'
+TSVFILENAME='%s/tabular_americans_data.tsv' % OUTDIR
 
-americans_tsv="%s/us_nationals.nt" % INSTANCEDIR
-american_uris, american_ids=extract_americans(americans_tsv)
+american_uris, american_ids=utils.extract_americans(americans_nt)
 
 clean_attributes = {'http://www.wikidata.org/entity/P21c': 'sex or gender', 'http://www.wikidata.org/entity/P106c': 'occupation', 'http://www.wikidata.org/entity/P937c': 'work location', 'http://www.wikidata.org/entity/P69c': 'educated at', 'http://www.wikidata.org/entity/P140c': 'religion', 'http://www.wikidata.org/entity/P102c': 'member of political party', 'http://www.wikidata.org/entity/P20c': 'place of death', 'http://www.wikidata.org/entity/P19c': 'place of birth', 'http://www.wikidata.org/entity/P570c': 'date of death', 'http://www.wikidata.org/entity/P569c': 'date of birth'}
-
-import pickle_utils
 
 print('Extracting data for %d Americans..' % len(american_ids))
 
@@ -50,9 +38,10 @@ for col in tmp_header:
 print(header)
 
 # EXTRACT PEOPLE DATA FROM WIKIDATA TO A PICKLE
-people_data=pickle_utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), INSTANCEDIR, pickle_with_all_data)
+people_data=utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), TMPDIR, pickle_with_all_data)
 
 print('people data loaded')
+print(people_data)
 
 people_for_pandas=[]
 for person_uri, person_from_json in people_data.items():
@@ -77,5 +66,5 @@ print('%d columns before removing NIL columns' % len(frame.columns))
 frame=frame.dropna(axis=1, how='all')
 print('%d columns after removing NIL columns' % len(frame.columns))
 
-frame.to_csv('%s/%s' % (INSTANCEDIR, TSVFILENAME), '\t')
+frame.to_csv( TSVFILENAME, '\t')
 

@@ -1,7 +1,6 @@
 import os
 import pickle
 import sys
-sys.path.insert(0,'..')
 
 import queries
 import utils
@@ -63,19 +62,23 @@ def dump_to_file(header, data, fn):
         for row in data:
             w.write('\t'.join(row) + '\n')
 
-INDIR='../../data/raw_instances'
-INSTANCEDIR='../../data/instance_data'
+# input directory and files
+INDIR='../data/raw_instances'
+statements_file="%s/wikidata-simple-statements.nt" % INDIR
 
-statements_file="%s/wikidata-simple-statements.nt" % INSTANCEDIR
+# tmp directory and files
+TMPDIR='../data/tmp'
+pickle_with_all_data='%s/us_crowd.p' % TMPDIR
+americans_tsv="%s/us_nationals.nt" % TMPDIR
+mappings_file='%s/mappings.tsv' % TMPDIR
 
-pickle_with_all_data='%s/us_crowd.p' % INSTANCEDIR
+# output files
+OUTDIR='../data/extracted_instances'
 
-americans_tsv="%s/us_nationals.nt" % INSTANCEDIR
 american_uris, american_ids=extract_americans(americans_tsv)
 
 clean_attributes = {'http://www.wikidata.org/entity/P21c': 'sex or gender', 'http://www.wikidata.org/entity/P106c': 'occupation', 'http://www.wikidata.org/entity/P937c': 'work location', 'http://www.wikidata.org/entity/P69c': 'educated at', 'http://www.wikidata.org/entity/P140c': 'religion', 'http://www.wikidata.org/entity/P102c': 'member of political party', 'http://www.wikidata.org/entity/P20c': 'place of death', 'http://www.wikidata.org/entity/P19c': 'place of birth', 'http://www.wikidata.org/entity/P570c': 'date of death', 'http://www.wikidata.org/entity/P569c': 'date of birth'}
 
-import pickle_utils
 
 # DEFINE HEADERS
 tmp_header=['instance uri', 'lifespan', 'century']
@@ -87,10 +90,10 @@ for col in tmp_header:
 print(header)
 
 # EXTRACT PEOPLE DATA FROM WIKIDATA TO A PICKLE
-people_data=pickle_utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), INSTANCEDIR, pickle_with_all_data)
+people_data=utils.wikidata_people_to_pickle([statements_file], american_uris, clean_attributes.keys(), TMPDIR, pickle_with_all_data)
 
 mappings={}
-with open('mappings.tsv', 'r') as mapfile:
+with open(mappings_file, 'r') as mapfile:
     rdr = csv.reader(mapfile, delimiter='\t', quotechar='"')
     hdr=next(rdr)
     for row in rdr:
@@ -171,62 +174,9 @@ print(len(rows_dec_entropy))
 new_dec_entropy=deduplicate(rows_dec_entropy)
 print(len(new_dec_entropy))
 
-dump_to_file(['instance_uri'] + header, rows_inc_entropy, 'increasing_entropy.tsv')
-dump_to_file(['instance_uri'] + header, rows_dec_entropy, 'decreasing_entropy.tsv')
+dump_to_file(['instance_uri'] + header, rows_inc_entropy, '%s/increasing_entropy.tsv' % OUTDIR)
+dump_to_file(['instance_uri'] + header, rows_dec_entropy, '%s/decreasing_entropy.tsv' % OUTDIR)
 
-dump_to_file(header, new_inc_entropy, 'dedup_inc_entropy.tsv')
-dump_to_file(header, new_dec_entropy, 'dedup_dec_entropy.tsv')
-
-sys.exit()
-
-for k, l in counts.items():
-#    print(k, Counter(l))
-    top10=Counter(l).most_common(10)
-    print(k)
-    mapped_top10=map_values(top10, mappings)
-    for lbl, val in mapped_top10:
-        print('%s\t%d' % (lbl, val))
-
-
-sys.exit()
-
-people_for_pandas=[]
-#firstN=list(people_data.keys())[:10]
-for person_uri in people_data:
-    person_from_json=people_data[person_uri]
-    person_for_pandas=[]
-    person_for_pandas.append(person_uri)
-    person_from_json=utils.sets_to_dates(person_from_json)
-    person_for_pandas+=utils.infer_properties(person_from_json, person_uri)
-
-    for attruri, attrlabel in clean_attributes.items():
-        if attruri in person_from_json:
-            person_for_pandas.append(person_from_json[attruri])
-        else:
-            person_for_pandas.append("")
-    people_for_pandas.append(person_for_pandas)
-
-frame=pd.DataFrame(people_for_pandas)
-frame.columns=header
-
-fields_to_fix=['height', 'sport number']
-frame[fields_to_fix] = frame[fields_to_fix].apply(pd.to_numeric, errors='coerce')
-
-print('%d columns before removing NIL columns' % len(frame.columns))
-frame=frame.dropna(axis=1, how='all')
-print('%d columns after removing NIL columns' % len(frame.columns))
-
-
-"""
-for i, row in frame.iterrows():
-    print(row['instance uri'])
-    print(row['occupation'])
-    print(row['religion'])
-
-    print(row['lifespan'])
-    print(row['active years'])
-    print(row['first activity'])
-    print(row['last activity'])
-"""
-frame.to_csv('%s/%s' % (INSTANCEDIR, TSVFILENAME), '\t')
+dump_to_file(header, new_inc_entropy, '%s/dedup_inc_entropy.tsv' % OUTDIR)
+dump_to_file(header, new_dec_entropy, '%s/dedup_dec_entropy.tsv' % OUTDIR)
 

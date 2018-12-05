@@ -6,10 +6,11 @@ from collections import defaultdict, OrderedDict
 import pickle
 from rdflib import Graph, RDF, Literal
 from dateutil import parser
+import os
 import sys
-import queries
-
 import math
+
+import queries
 
 sparql = SPARQLWrapper("http://sparql.fii800.lod.labs.vu.nl/sparql")
 
@@ -20,6 +21,8 @@ WIKIDATA_END_ACTIVITY="http://www.wikidata.org/entity/P2032c"
 
 WIKIDATA_IDS="http://www.wikidata.org/entity/Q19847637"
 WIKIDATA_PEOPLE_IDS="http://www.wikidata.org/entity/Q19595382"
+
+freebase_attr="http://www.wikidata.org/entity/P646-freebase"
 
 """
 def parse_date_literal(l):
@@ -51,17 +54,37 @@ def sets_to_dates(myjson):
     return myjson
          
 
-def wikidata_people_to_pickle(files, all_people, attr_keys, idir):
+def wikidata_people_to_pickle(files, all_people, attr_keys, idir, filename):
     try:
-        people_data=pickle.load(open('%s/wikidata-simple-statements.p' % idir, 'rb'))
+        people_data=pickle.load(open(filename, 'rb'))
         print("People data file found and loaded.")
+        return people_data
     except:
         print("People data file not found. Extracting now...")
-        people_datas=utils.extract_relations_from_files(files, all_people, attr_keys, idir)
+        people_datas=extract_relations_from_files(files, all_people, attr_keys, idir)
         people_data=people_datas[0]
-        print("People data extracted.")
-    return people_data
+        print("People data extracted, to file %s." % filename)
+        with open(filename, 'wb') as w:
+            pickle.dump(people_data,w)
+        return people_data
 
+def get_relevant_vectors(freebase_vectors_pickle, people_data, freebase_txt):
+    if os.path.exists(freebase_vectors_pickle):
+        vector_json=pickle.load(open(freebase_vectors_pickle, 'rb'))
+    else:
+        print("FB file does not exist. Creating it now...")
+        freebase_people_uris=[normalize_freebase(person_data[freebase_attr]) for person_uri, person_data in people_data.items() if freebase_attr in person_data and person_data[freebase_attr]!=""]
+        print("Counted %d people with freebase ids" % len(freebase_people_uris))
+        vector_json={}
+        with open(freebase_txt , 'r') as freebase_raw_file:
+            for line in freebase_raw_file:
+                fid, *numbers=line.split()
+                if len(numbers)>10 and fid in freebase_people_uris:
+                    numbers=list(map(float, numbers))
+                    vector_json[fid]=numbers
+
+        pickle.dump(vector_json, open(freebase_vectors_pickle, 'wb'))
+    return vector_json
 
 def infer_lifespan(myjson, key):    
     if WIKIDATA_BDATE in myjson and WIKIDATA_DDATE in myjson:
@@ -216,6 +239,18 @@ def extract_relations_from_files(file_list, people_set, attribute_set, outdir):
             pickle.dump(biggie, open('%s/%s.p' % (outdir, input_file.split('/')[1].split('.')[0]), 'wb'))
             print('done with %s' % input_file)
     return biggies 
+
+def extract_americans(the_tsv):
+    identifiers=set()
+    uris=set()
+    with open(the_tsv, 'r') as f:
+        for line in f:
+            uri=line.split()[0]
+            uri=uri.rstrip('>').lstrip('<')
+            identifier=uri.split('/')[-1]
+            uris.add(uri)
+            identifiers.add(identifier)
+    return uris,identifiers
 
 def extract_all_dudes(persontype, infile, outfile):
 

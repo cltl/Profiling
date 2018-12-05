@@ -1,4 +1,3 @@
-
 import utils
 
 def get_most_frequent_attributes(a_type, how_much=10):
