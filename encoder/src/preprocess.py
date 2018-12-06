@@ -89,7 +89,7 @@ def create_data(entity_type, embeddings, experiment):
         dir_path = "../data/%s/" % entity_type
     sets = ["train", "dev", "test"]
     outdirs = [dir_path + sets[i] + ".txt" for i in range(len(sets))]
-    ratio = [0.8, 0.1, 0.1]
+    ratio = [0.85, 0.15, 0.0]
     cnt = 0
     for i in range(len(sets)):
         oup = open(outdirs[i], "w")
@@ -104,10 +104,18 @@ def main(args):
     args = config.get_args()
     print(args)
     entity_type=args.entity_type
+
     embeddings=args.embeddings
-    train_file, outdir = create_data(entity_type, embeddings, args.experiment)
-    #train_file='../data/%s/train.txt' % entity_type
-    #outdir='../data/%s/' % entity_type
+
+    split=False
+
+    if split:
+    # RUN THIS LINE TO CREATE THE SPLITS TO TRAIN-DEV-TEST
+        train_file, outdir = create_data(entity_type, embeddings, args.experiment)
+    else:
+        # RUN THIS LINE IF YOU HAVE ALREADY DONE THE SPLITTING AND WANT TO ONLY CREATE EMBEDDINGS
+        train_file='../data/%s/train.txt' % entity_type
+        outdir='../data/%s/' % entity_type
 
     logging.info('-' * 50)
     logging.info('Load data files..')

@@ -135,6 +135,7 @@ def eval_acc(test_fn, all_examples, inv_word_dicts, topk_acc=1, print_allowed=Fa
         acc_per_num[i]={'c':0, 'i':0}
         attr_acc[i]={'c':0, 'i':0}
         influences[i]={'c':0, 'i':0}
+    print('SIZE', len(all_examples))
     for inps in all_examples:
         if args.complete_AE:
         #if True:
